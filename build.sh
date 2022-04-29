@@ -56,14 +56,14 @@ cd ../../
 # Build static desktop-file-utils
 apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
-tar xf desktop-file-utils-0.15.tar.gz 
+tar xf desktop-file-utils-0.15.tar.gz
 cd desktop-file-utils-0.15
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
 wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
 wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure
-make -j$(nproc)	
+make -j$(nproc)
 cd src/
 gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
 gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
@@ -78,9 +78,10 @@ apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspect
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
-mkdir build && cd build
-meson ..
-ninja -v
+sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
+CFLAGS=-static LDFLAGS=-static meson setup build --default-library=static -Dstemming=false -Dgir=false -Dapidocs=false
+cd build
+ninja -v tools/appstreamcli
 libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
 cp $libs tools/
 cp /lib/ld-musl-*.so.1 tools/
