@@ -89,8 +89,7 @@ sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
 CFLAGS=-static LDFLAGS=-static meson setup build --default-library=static -Dstemming=false -Dgir=false -Dapidocs=false
 cd build
 ninja -v tools/appstreamcli
-libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
-cp $libs tools/
+echo $(ldd ./tools/appstreamcli)
 cp /lib/ld-musl-*.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/appstreamcli
