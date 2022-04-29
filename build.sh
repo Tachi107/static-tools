@@ -74,7 +74,14 @@ cd -
 # Build appstreamcli
 # But entirely unclear how to make meson build a static binary
 # but unlike with glibc it is rather easy to "bundle everything" with musl, result is 2.8 MB
-apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf
+apk add glib-static meson cmake libxml2-dev yaml-dev gobject-introspection-dev snowball-dev gperf
+wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
+tar xf openldap-LMDB_0.9.29.tar.gz
+cd openldap-LMDB_0.9.29/libraries/liblmdb
+make liblmdb.a
+sudo install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
+sudo install -D -m 644 lmdb.h /usr/local/include/lmdb.h
+cd -
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
