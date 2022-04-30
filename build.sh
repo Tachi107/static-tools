@@ -89,10 +89,16 @@ cd -
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
+# Ask for static dependencies
 sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/install" --strip -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
-ninja -C build -v tools/appstreamcli
-meson install -C build --no-rebuild
+# Disable po, docs and tests
+sed -i -e "s|subdir('po/')||" meson.build
+sed -i -e "s|subdir('docs/')||" meson.build
+sed -i -e "s|subdir('tests/')||" meson.build
+# -no-pie is required to statically link to libc
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/install" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+# Install in a staging enviroment
+meson install -C build
 ldd ./install/bin/appstreamcli || true
 file install/bin/appstreamcli
 cd ../../
