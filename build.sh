@@ -73,7 +73,7 @@ gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lgli
 gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
 gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
-cd -
+cd ../..
 
 # Build appstreamcli
 # But entirely unclear how to make meson build a static binary
@@ -90,16 +90,11 @@ wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
 sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
-CFLAGS='-static -no-pie' LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/install" -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
-cd build
-ninja -v tools/appstreamcli
-meson install
-echo $(ldd ./tools/appstreamcli)
-file tools/appstreamcli
-cp /lib/ld-musl-*.so.1 tools/
-patchelf --set-rpath '$ORIGIN' tools/appstreamcli
-strip ./tools/appstreamcli
-(cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/install" --strip -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+ninja -C build -v tools/appstreamcli
+meson install -C build --no-rebuild
+ldd ./install/bin/appstreamcli || true
+file install/bin/appstreamcli
 cd ../../
 
 # Build static bsdtar
