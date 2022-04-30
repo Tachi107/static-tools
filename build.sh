@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -ex
+
 #############################################
 # Download and extract minimal Alpine system
 #############################################
@@ -90,6 +94,7 @@ CFLAGS=-static LDFLAGS=-static meson setup build --default-library=static -Dstem
 cd build
 ninja -v tools/appstreamcli
 echo $(ldd ./tools/appstreamcli)
+file tools/appstreamcli
 cp /lib/ld-musl-*.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/appstreamcli
