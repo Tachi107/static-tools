@@ -79,6 +79,7 @@ cd ../..
 # But entirely unclear how to make meson build a static binary
 # but unlike with glibc it is rather easy to "bundle everything" with musl, result is 2.8 MB
 apk add glib-static meson cmake libxml2-dev yaml-dev gobject-introspection-dev snowball-dev gperf
+# Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_0.9.29.tar.gz
 cd openldap-LMDB_0.9.29/libraries/liblmdb
@@ -128,7 +129,7 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 
 # Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
-if [ "$ARCHITECTURE" == "x86" ] ; then export ARCHITECTURE=i686 ; fi
+if [ "$ARCHITECTURE" = "x86" ] ; then export ARCHITECTURE=i686 ; fi
 
 mkdir -p out/
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \; 2>/dev/null
