@@ -100,9 +100,8 @@ sed -i -e "s|subdir('tests/')||" meson.build
 CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/install" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
 # Install in a staging enviroment
 meson install -C build
-ldd ./install/bin/appstreamcli || true
 file install/bin/appstreamcli
-cd ../../
+cd -
 
 # Build static bsdtar
 apk add zlib-dev bzip2-dev # What happened to zlib-static?
