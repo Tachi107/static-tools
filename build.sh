@@ -15,7 +15,10 @@ wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
 cd zsync-*/
 find . -type f -exec sed -i -e 's|off_t|size_t|g' {} \;
-./configure CFLAGS=-no-pie LDFLAGS=-static --build=$(arch)-unknown-linux-musl
+# The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O autotools/config.guess
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O autotools/config.sub
+./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
 file zsyncmake
 strip zsyncmake
